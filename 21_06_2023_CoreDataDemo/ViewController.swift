@@ -14,6 +14,10 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         //addDataToCoreData()
+//        retriveDataFromCoreData()
+//        updatePersonRecord()
+        retriveDataFromCoreData()
+        deleteAPersonRecord()
         retriveDataFromCoreData()
     }
     
@@ -54,6 +58,51 @@ class ViewController: UIViewController {
             }
         }catch{
             print("Falied")
+        }
+    }
+    
+    func updatePersonRecord(){
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let managedContext = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest : NSFetchRequest<NSFetchRequestResult> = NSFetchRequest.init(entityName: "Person")
+        fetchRequest.predicate = NSPredicate(
+            format: "name = %@", "Person1")
+        
+        do{
+            let fetchedResult = try managedContext.fetch(fetchRequest)
+            let personObjectToBeUpdated = fetchedResult[0] as! NSManagedObject
+            personObjectToBeUpdated.setValue("Prathamesh", forKey: "name")
+            personObjectToBeUpdated.setValue("prathamesh@gmail.com", forKey: "email")
+            do{
+                try managedContext.save()
+            }catch{
+                print("error")
+            }
+        }catch{
+            print("Error")
+        }
+    }
+    
+    func deleteAPersonRecord(){
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let managedContext = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest : NSFetchRequest<NSFetchRequestResult> =
+        NSFetchRequest<NSFetchRequestResult>(entityName: "Person")
+        fetchRequest.predicate = NSPredicate(
+            format: "name = %@", "Person2")
+        do{
+            let fetchRecords = try managedContext.fetch(fetchRequest)
+            let personObjectToBeDeleted = fetchRecords[0] as! NSManagedObject
+            managedContext.delete(personObjectToBeDeleted)
+            do{
+                try managedContext.save()
+            }catch{
+                print("Error")
+            }
+        }catch{
+            print("Error")
         }
     }
 }
